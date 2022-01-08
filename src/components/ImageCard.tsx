@@ -40,7 +40,7 @@ export default function ImageCard({ data }: Props): ReactElement {
                 addLiked(data.url);
               }
             }}
-            className={`font-semibold cursor-pointer py-2 px-4 rounded-xl flex items-center space-x-1 ${liked ? 'bg-green-500 hover:bg-green-400 text-white outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500' : 'bg-gray-200 hover:bg-gray-100 text-gray-800 outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'}`}
+            className={`font-semibold cursor-pointer py-2 px-4 rounded-xl flex items-center space-x-1 transition ${liked ? 'bg-green-500 hover:bg-green-400 text-white outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500' : 'bg-gray-200 hover:bg-gray-100 text-gray-800 outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'}`}
           >
             <span>Like{liked && "d"}</span>
             {liked ? <ThumbSolid className="w-4 h-4" /> : <ThumbOutline className="w-4 h-4" />}
