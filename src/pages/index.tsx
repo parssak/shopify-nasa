@@ -1,18 +1,27 @@
+import ImageCard from "components/ImageCard";
+import useNASA from "hooks/useNASA";
+import { useState } from "react";
+
 export default function Home() {
+  const { loading, data, error } = useNASA();
+  const [query, setQuery] = useState("");
+
   return (
     <>
-      <main className="container min-h-screen grid pt-48 md:pt-0 md:place-items-center">
-        <div className="md:text-center">
-          <h1 className="text-5xl font-semibold ">
-            Next.js, TailwindCSS, TypeScript Template!
-          </h1>
-          <p className="text-2xl text-gray-600 md:max-w-2xl mx-auto mt-12 md:mt-6">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Assumenda,
-            architecto, ducimus cumque temporibus optio quae dolore expedita
-            itaque ut minima labore nisi veniam amet rerum quidem, quam dolorum
-            vero nulla.
-          </p>
-        </div>
+      <main className="container min-h-screen pt-24 grid place-items-center">
+        <h1 className="text-5xl font-bold text-left">NASA Daily Image Data</h1>
+        <h2 className="text-2xl font-medium text-left mb-12">
+          Made by Parssa Kyanzadeh, for Shopify
+        </h2>
+        {loading && <>Loading...</>}
+        {error && <p>{error}</p>}
+        {data && (
+          <div className="space-y-8 pb-8">
+            {data?.map((item) => (
+              <ImageCard data={item} key={item.url} />
+            ))}
+          </div>
+        )}
       </main>
     </>
   );
