@@ -1,9 +1,10 @@
 import ImageCard from "components/ImageCard";
 import useNASA from "hooks/useNASA";
 import { ExternalLinkIcon } from "@heroicons/react/outline";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function Home() {
-  const { loading, data, error } = useNASA();
+  const { loading, data, error, fetchMoreData } = useNASA();
 
   return (
     <>
@@ -28,11 +29,17 @@ export default function Home() {
         {loading && <>Loading...</>}
         {error && <p>{error}</p>}
         {data && (
-          <div className="space-y-8 pb-8 ">
-            {data?.map((item) => (
+          <InfiniteScroll
+            dataLength={data.length}
+            next={fetchMoreData}
+            hasMore={true}
+            loader={<h4 className="font-medium text-center">Getting more awesome pics, one moment please...</h4>}
+            className="space-y-8 pb-8"
+          >
+            {data.map((item) => (
               <ImageCard data={item} key={item.url} />
             ))}
-          </div>
+          </InfiniteScroll>
         )}
       </main>
     </>

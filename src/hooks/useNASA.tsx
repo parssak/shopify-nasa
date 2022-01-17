@@ -10,39 +10,48 @@ const apiState = atom({
     loading: false,
     data: null as IDailyImageData[],
     error: null,
+    lastFetchDate: null as Date | null,
   },
 });
 
 export default function useNASA() {
-  const [{ loading, data, error }, setApiState] = useRecoilState(apiState);
+  const [{ loading, data, error, lastFetchDate }, setApiState] = useRecoilState(apiState);
+
+  const fetchData = async (fromDate: Date) => {
+    setApiState((state) => ({ ...state, loading: true }));
+
+    const from = fromDate.toISOString().slice(0, 10);
+    const toDate = new Date(fromDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const to = toDate.toISOString().slice(0, 10);
+
+    try {
+      const { data } = await axios.get(
+        `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&start_date=${to}&end_date=${from}`
+      );
+
+      setApiState((state) => ({
+        ...state,
+        loading: false,
+        data: state.data ? [...state.data, ...data] : [...data],
+        lastFetchDate: toDate,
+      }));
+    } catch (error) {
+      setApiState((state) => ({ ...state, loading: false, error: error.message }));
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setApiState((state) => ({ ...state, loading: true }));
-      // get astronomy picture of the day
-      try {
-        // get 30 days ago
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 30);
-        const startDateStr = startDate.toISOString().split("T")[0];
-        // get today
-        const endDate = new Date();
-        const endDateStr = endDate.toISOString().split("T")[0];
-        const response = await axios.get(
-          `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&start_date=${startDateStr}&end_date=${endDateStr}`
-        );
-        const data: IDailyImageData[] = response.data.reverse();
-        setApiState((state) => ({ ...state, loading: false, data }));
-      } catch (error) {
-        setApiState((state) => ({ ...state, loading: false, error }));
-      }
-    };
     try {
-      if (!loading && (!data || data?.length === 0)) fetchData();
+      if (!loading && (!data || data?.length === 0))  fetchMoreData();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }, []);
 
-  return { loading, data, error };
+  const fetchMoreData = async () => {
+    if (!lastFetchDate) fetchData(new Date());
+    else fetchData(lastFetchDate);
+  };
+
+  return { loading, data, error, fetchMoreData };
 }
