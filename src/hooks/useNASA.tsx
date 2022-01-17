@@ -31,7 +31,7 @@ export default function useNASA() {
         const response = await axios.get(
           `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&start_date=${startDateStr}&end_date=${endDateStr}`
         );
-        const data: IDailyImageData[] = response.data;
+        const data: IDailyImageData[] = response.data.reverse();
         setApiState((state) => ({ ...state, loading: false, data }));
       } catch (error) {
         setApiState((state) => ({ ...state, loading: false, error }));
